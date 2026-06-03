@@ -87,6 +87,12 @@ func initConfig() {
 		AuthUsername = viper.GetString("otsUser")
 		AuthPassword = viper.GetString("otsToken")
 
+		if h := viper.GetString("otsHost"); h != "" {
+			client.HOST = h
+		}
+		if u := viper.GetString("otsBaseUri"); u != "" {
+			client.BASE_URI = u
+		}
 	}
 
 	if len(AuthUsername) != 0 && len(AuthPassword) != 0 {
