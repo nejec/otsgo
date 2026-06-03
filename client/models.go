@@ -20,7 +20,8 @@ type StatusRes struct {
 type AuthYaml struct {
 	Username string `yaml:"otsUser"`
 	Password string `yaml:"otsToken"`
-	//Enabled  bool   `yaml:"OTS_AUTH_ENABLED"`
+	Host     string `yaml:"otsHost,omitempty"`
+	BaseUri  string `yaml:"otsBaseUri,omitempty"`
 }
 
 type ErrorResponse struct {

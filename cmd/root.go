@@ -81,6 +81,13 @@ func initConfig() {
 	AuthUsername = viper.GetString("OTS_USER")
 	AuthPassword = viper.GetString("OTS_TOKEN")
 
+	if h := viper.GetString("OTS_HOST"); h != "" {
+		client.HOST = h
+	}
+	if u := viper.GetString("OTS_BASE_URI"); u != "" {
+		client.BASE_URI = u
+	}
+
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
@@ -94,6 +101,8 @@ func initConfig() {
 			client.BASE_URI = u
 		}
 	}
+
+	fmt.Fprintln(os.Stderr, "Endpoint:", client.HOST)
 
 	if len(AuthUsername) != 0 && len(AuthPassword) != 0 {
 		AuthEnabled = true

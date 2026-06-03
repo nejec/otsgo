@@ -3,7 +3,6 @@ package client
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/url"
 	"strconv"
@@ -181,7 +180,7 @@ func GetRecent(a Auth, b SecretBody) {
 			defer wg.Done()
 			body, err := AgnosticRequest(a, uri, "POST", strings.NewReader(data.Encode()))
 			if err != nil {
-				if errors.Is(err, errors.New("404 Unknown secret")) || err.Error() == "404 Unknown secret" {
+				if err.Error() == "404 Unknown secret" {
 					return
 				} else {
 					errorCh <- err

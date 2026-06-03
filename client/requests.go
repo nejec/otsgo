@@ -51,7 +51,7 @@ func AgnosticRequest(a Auth, uri string, m string, b io.Reader) ([]byte, error) 
 		if err := json.Unmarshal(resBody, &ErrResponse); err != nil {
 			fmt.Println("Can not unmarshal JSON")
 		}
-		return nil, fmt.Errorf(string(fmt.Sprintf("%d %s", res.StatusCode, ErrResponse.Message)))
+		return nil, fmt.Errorf("%d %s", res.StatusCode, ErrResponse.Message)
 	}
 
 	return resBody, nil

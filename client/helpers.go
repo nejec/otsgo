@@ -9,25 +9,36 @@ import (
 	"time"
 
 	"github.com/olekukonko/tablewriter"
+	"github.com/olekukonko/tablewriter/renderer"
+	"github.com/olekukonko/tablewriter/tw"
 )
 
 func fmtTableOutput(header []string, data [][]string) {
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader(header)
-	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
-	table.SetAutoWrapText(false)
-	table.SetAutoFormatHeaders(true)
-	table.SetHeaderAlignment(tablewriter.ALIGN_LEFT)
-	table.SetAlignment(tablewriter.ALIGN_LEFT)
-	table.SetCenterSeparator("")
-	table.SetColumnSeparator("")
-	table.SetRowSeparator("")
-	table.SetHeaderLine(false)
-	//table.EnableBorder(false)
-	table.SetTablePadding("\t") // pad with tabs
-	table.SetNoWhiteSpace(true)
-	table.AppendBulk(data) // Add Bulk Data
-	table.Render()
+	table := tablewriter.NewTable(os.Stdout,
+		tablewriter.WithRenderer(renderer.NewBlueprint(tw.Rendition{
+			Borders:  tw.BorderNone,
+			Settings: tw.Settings{Separators: tw.SeparatorsNone, Lines: tw.LinesNone},
+		})),
+		tablewriter.WithConfig(tablewriter.Config{
+			Header: tw.CellConfig{
+				Formatting: tw.CellFormatting{AutoWrap: tw.WrapNone, AutoFormat: tw.On},
+				Alignment:  tw.CellAlignment{Global: tw.AlignLeft},
+				Padding:    tw.CellPadding{Global: tw.PaddingNone},
+			},
+			Row: tw.CellConfig{
+				Formatting: tw.CellFormatting{AutoWrap: tw.WrapNone},
+				Alignment:  tw.CellAlignment{Global: tw.AlignLeft},
+				Padding:    tw.CellPadding{Global: tw.Padding{Right: "\t"}},
+			},
+		}),
+	)
+	table.Header(header)
+	if err := table.Bulk(data); err != nil {
+		fmt.Fprintln(os.Stderr, "table bulk:", err)
+	}
+	if err := table.Render(); err != nil {
+		fmt.Fprintln(os.Stderr, "table render:", err)
+	}
 }
 
 func loadHistory(limit int) (History, error) {
@@ -53,7 +64,7 @@ func loadHistory(limit int) (History, error) {
 		// Split the line into timestamp and key
 		parts := strings.Split(line, ";")
 		if len(parts) != 2 {
-			return nil, fmt.Errorf("invalid line format: %v", err)
+			return nil, fmt.Errorf("invalid line format: %q", line)
 		}
 
 		entry := strings.TrimSpace(parts[1])
